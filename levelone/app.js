@@ -1,8 +1,8 @@
 // Get references to the tbody element, input fields and button
-var $tbody = document.querySelector("tbody");
-var $dateInput = document.querySelector("#datetime");
-var $searchBtn = document.querySelector("#search");
-var $resetBtn = document.querySelector("#reset");
+let $tbody = document.querySelector("tbody");
+let $dateInput = document.querySelector("#datetime");
+let $searchBtn = document.querySelector("#search");
+let $resetBtn = document.querySelector("#reset");
 
 // Add an event listener to the searchButton, call handleSearchButtonClick when clicked
 $searchBtn.addEventListener("click", handleSearchButtonClick);
@@ -11,22 +11,22 @@ $searchBtn.addEventListener("click", handleSearchButtonClick);
 $resetBtn.addEventListener("click", handleResetButtonClick);
 
 // Create a copy of the data
-var tableData = data;
+let tableData = data;
 
 // Build table with non-filtered data
 function renderTable() {
   $tbody.innerHTML = "";
-  for (var i = 0; i < tableData.length; i++) {
+  for (let i = 0; i < tableData.length; i++) {
     // Get current address object and fields
-    var address = tableData[i];
+    let address = tableData[i];
     console.log(address)
-    var fields = Object.keys(address);
+    let fields = Object.keys(address);
     // Create new row in tbody, set index to be i + startingIndex
-    var $row = $tbody.insertRow(i);
-    for (var j = 0; j < fields.length; j++) {
+    let $row = $tbody.insertRow(i);
+    for (let j = 0; j < fields.length; j++) {
       // For each field in address object, create new cell and set inner text to be current value at current address field
-      var field = fields[j];
-      var $cell = $row.insertCell(j);
+      let field = fields[j];
+      let $cell = $row.insertCell(j);
       $cell.innerText = address[field];
     }
   }
@@ -39,7 +39,7 @@ function handleSearchButtonClick() {
   // Filter on date
   if (filterDate != "") {
     tableData = data.filter(function (address) {
-      var addressDate = address.datetime;
+      let addressDate = address.datetime;
       return addressDate === filterDate;
     });
   }
