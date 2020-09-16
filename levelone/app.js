@@ -2,7 +2,7 @@
 // Create a copy of the data
 let tableData = data;
 
-/ Get references to the tbody element, input fields and button
+// Get references to the tbody element, input fields and button
 let $tbody = document.querySelector("tbody");
 let $dateInput = document.querySelector("#datetime");
 let $searchBtn = document.querySelector("#search");
