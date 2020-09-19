@@ -46,9 +46,4 @@ button.on("click", () => {
     if(response.filteredDate.length !== 0) {
         newData(filteredDate);
     }
-
-    // message will appear if the data you filtered does no appear
-        else {
-            $tbody.append("tr").append("td").text("No UFO Sightings");
-        }
 })
