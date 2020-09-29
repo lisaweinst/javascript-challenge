@@ -1,101 +1,117 @@
-// Get references to the tbody element, input fields and button
-var $tbody = document.querySelector("tbody");
-var $dateInput = document.querySelector("#datetime");
-var $stateInput = document.querySelector("#state");
-var $cityInput = document.querySelector("#city");
-var $countryInput = document.querySelector("#country");
-var $shapeInput = document.querySelector("#shape");
-var $searchBtn = document.querySelector("#search");
-var $resetBtn = document.querySelector("#reset");
-
-// Add an event listener to the searchButton, call handleSearchButtonClick when clicked
-$searchBtn.addEventListener("click", handleSearchButtonClick);
-
-// Add an event listener to the resetButton, call handleResetButtonClick when clicked
-$resetBtn.addEventListener("click", handleResetButtonClick);
-
-// Create a copy of the data
 var tableData = data;
 
-// Build table with non-filtered data
-function renderTable() {
-  $tbody.innerHTML = "";
-  for (var i = 0; i < tableData.length; i++) {
-    // Get current address object and fields
-    var address = tableData[i];
-    console.log(address)
-    var fields = Object.keys(address);
-    // Create new row in tbody, set index to be i + startingIndex
-    var $row = $tbody.insertRow(i);
-    for (var j = 0; j < fields.length; j++) {
-      // For each field in address object, create new cell and set inner text to be current value at current address field
-      var field = fields[j];
-      var $cell = $row.insertCell(j);
-      $cell.innerText = address[field];
+// select the filter type
+var filterType = d3.select("#filter-type");
+
+var filterTypeValue = d3.select("#filter-type-value");
+
+// Select the submit button
+var submit = d3.select("#filter-btn");
+
+
+// Get a reference to the table body
+var tbody = d3.select("tbody");
+
+// Console.log the alients data from data.js
+console.log(tableData);
+autoPopulate(tableData);
+
+function autoPopulate(tableData) {
+
+    // Use d3 to automatically populate tableData by creating table rows
+// and cells.
+
+tableData.forEach((alients) => {
+    // Creating table rows for each row of alients data
+    var row = tbody.append("tr");
+    //Iterating thru each row for key and values
+    Object.entries(alients).forEach(([key, value]) => {
+        // Creating cells for posting table data
+        var cell = row.append("td");
+        cell.text(value);
+    });
+});
+
+}
+
+
+
+//function to invoke on selection of an item from dropdown
+filterType.on("change", function() {
+    var filterValue = filterType.property("value");
+    d3.select("#filtertype").node().value = '';
+    // Setting placeholder values for input text
+    switch (filterValue) {
+        case 'datetime':
+            placeHolder = '1/1/2010';
+            break;
+        case 'city':
+            placeHolder = 'city';
+            break;
+        case 'state':
+            placeHolder = 'state';
+            break;
+        case 'country':
+            placeHolder = 'country';
+            break;
+        case 'shape':
+            placeHolder = 'shape';
+            break;
+        default:
+            placeHolder = '';
     }
-  }
-}
+    d3.select("input").attr("placeholder", placeHolder);
+    d3.select("label")
+      .attr("for",filterValue)
+      .text(`Enter a value for  ${filterValue.toUpperCase()}`);
 
-// Build search table for filtered data
-function handleSearchButtonClick() {
-  var filterDate = $dateInput.value;
-  var filterState = $stateInput.value.trim().toLowerCase();
-  var filterCity = $cityInput.value.trim().toLowerCase();
-  var filterCountry = $countryInput.value.trim().toLowerCase();
-  var filterShape = $shapeInput.value.trim().toLowerCase();
+    
+});
 
-  // Filter on date
-  if (filterDate != "") {
-    tableData = data.filter(function (address) {
-      var addressDate = address.datetime;
-      return addressDate === filterDate;
-    });
-  }
-  else { tableData };
+// Function to invoke on clicking the filter button
+submit.on("click", function() {
+        
+        // Prevent the page from refreshing
+        d3.event.preventDefault();
 
-  // Filter on state
-  if (filterState != "") {
-    tableData = tableData.filter(function (address) {
-      var addressState = address.state;
-      return addressState === filterState;
-    });
-  }
-  else { tableData };
+        // Clearing the previous table data
+        tbody.html("");
 
-  // Filter on city
-  if (filterCity != "") {
-    tableData = tableData.filter(function (address) {
-      var addressCity = address.city;
-      return addressCity === filterCity;
-    });
-  }
-  else { tableData };
+        //get the data entered in text box
+        var inputElement = d3.select("#filtertype");
+         
+        var inputValue = inputElement.property("value");
+        
+        if (inputValue == '') {
+            alert("Please enter a filter value!");
+            document.getElementById("#filtertype").focus();
+            autoPopulate(tableData);
+        }
+        
+        //Filter the data based on the input value
+        var typeVal = d3.select("label").attr("for");
+        
+        var filteredData = tableData.filter(alients => alients[typeVal] === inputValue.toLowerCase());
+        if (filteredData.length == 0) {
+            alert("Oops..No UFO's found, try another filter value!");
+            d3.select("#filtertype").node().value = '';
+            autoPopulate(tableData);
+        }
+        console.log(filteredData);
+        
+        //Displaying the data for the selection
+        filteredData.forEach((alients) => {
+            // Creating table rows for each row of alients data
+            var row = tbody.append("tr");
+            //Iterating thru each row for key and values
+            Object.entries(alients).forEach(([key, value]) => {
+                // Creating cells for posting table data
+                var cell = row.append("td");
+                cell.text(value);
+            });
+        });
 
-  // Filter on country
-  if (filterCountry != "") {
-    tableData = tableData.filter(function (address) {
-      var addressCountry = address.country;
-      return addressCountry === filterCountry;
-    });
-  }
-  else { tableData };
 
-  // Filter on shape
-  if (filterShape != "") {
-    tableData = tableData.filter(function (address) {
-      var addressShape = address.shape;
-      return addressShape === filterShape;
-    });
-  }
-  else { tableData };
 
-  renderTable();
-}
+})
 
-// Clear all the fields
-function handleResetButtonClick(){
-  renderTable();
-}
-
-// Render the table for the first time on page load
-renderTable();
