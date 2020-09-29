@@ -1,117 +1,73 @@
+// from data.js
 var tableData = data;
-
-// select the filter type
-var filterType = d3.select("#filter-type");
-
-var filterTypeValue = d3.select("#filter-type-value");
-
-// Select the submit button
-var submit = d3.select("#filter-btn");
-
 
 // Get a reference to the table body
 var tbody = d3.select("tbody");
 
-// Console.log the alients data from data.js
-console.log(tableData);
-autoPopulate(tableData);
+// Display the entire dataset as default
 
-function autoPopulate(tableData) {
+tableData.forEach((report) => {
+    console.log(report);
+    var row = tbody.append('tr');
 
-    // Use d3 to automatically populate tableData by creating table rows
-// and cells.
-
-tableData.forEach((alients) => {
-    // Creating table rows for each row of alients data
-    var row = tbody.append("tr");
-    //Iterating thru each row for key and values
-    Object.entries(alients).forEach(([key, value]) => {
-        // Creating cells for posting table data
-        var cell = row.append("td");
+    Object.entries(report).forEach(([key, value]) => {
+        console.log(key, value);
+        var cell = row.append('td');
         cell.text(value);
     });
 });
 
+// Select the submit button in the html file
+var clickHandler = d3.select("#filter-btn");
+
+//Click event
+clickHandler.on("click", function() {
+
+//Remove existing table
+d3.select("tbody").html("");
+
+//Prevent page from refreshing
+d3.event.preventDefault();
+
+// Get the value property of the input elements and set all text to lowercase
+var dateTime = d3.select("#datetime").property("value");
+
+var selectedCountry = d3.select("#country").property("value").toLowerCase();
+
+var selectedState = d3.select("#state").property("value").toLowerCase();
+
+var selectedCity = d3.select("#city").property("value").toLowerCase();
+
+var selectedShape = d3.select("#shape").property("value").toLowerCase();
+
+// initialize tableData as filteredData
+filteredData = tableData;
+
+if (dateTime) {
+    filteredData = filteredData.filter(record => record.datetime === dateTime);
+}
+if (selectedCountry) {
+    filteredData = filteredData.filter(record => record.country === selectedCountry);
+}
+if (selectedState) {
+    filteredData = filteredData.filter(record => record.state === selectedState);
+}
+if (selectedCity) {
+    filteredData = filteredData.filter(record => record.city === selectedCity);
+}
+if (selectedShape) {
+    filteredData = filteredData.filter(record => record.shape === selectedShape);
 }
 
+// Display the filtered dataset
 
+filteredData.forEach((report) => {
+    var row = tbody.append('tr');
 
-//function to invoke on selection of an item from dropdown
-filterType.on("change", function() {
-    var filterValue = filterType.property("value");
-    d3.select("#filtertype").node().value = '';
-    // Setting placeholder values for input text
-    switch (filterValue) {
-        case 'datetime':
-            placeHolder = '1/1/2010';
-            break;
-        case 'city':
-            placeHolder = 'city';
-            break;
-        case 'state':
-            placeHolder = 'state';
-            break;
-        case 'country':
-            placeHolder = 'country';
-            break;
-        case 'shape':
-            placeHolder = 'shape';
-            break;
-        default:
-            placeHolder = '';
-    }
-    d3.select("input").attr("placeholder", placeHolder);
-    d3.select("label")
-      .attr("for",filterValue)
-      .text(`Enter a value for  ${filterValue.toUpperCase()}`);
-
-    
+    Object.entries(report).forEach(([key, value]) => {
+        console.log(key, value);
+        var cell = row.append('td');
+        cell.text(value);
+    });
 });
-
-// Function to invoke on clicking the filter button
-submit.on("click", function() {
-        
-        // Prevent the page from refreshing
-        d3.event.preventDefault();
-
-        // Clearing the previous table data
-        tbody.html("");
-
-        //get the data entered in text box
-        var inputElement = d3.select("#filtertype");
-         
-        var inputValue = inputElement.property("value");
-        
-        if (inputValue == '') {
-            alert("Please enter a filter value!");
-            document.getElementById("#filtertype").focus();
-            autoPopulate(tableData);
-        }
-        
-        //Filter the data based on the input value
-        var typeVal = d3.select("label").attr("for");
-        
-        var filteredData = tableData.filter(alients => alients[typeVal] === inputValue.toLowerCase());
-        if (filteredData.length == 0) {
-            alert("Oops..No UFO's found, try another filter value!");
-            d3.select("#filtertype").node().value = '';
-            autoPopulate(tableData);
-        }
-        console.log(filteredData);
-        
-        //Displaying the data for the selection
-        filteredData.forEach((alients) => {
-            // Creating table rows for each row of alients data
-            var row = tbody.append("tr");
-            //Iterating thru each row for key and values
-            Object.entries(alients).forEach(([key, value]) => {
-                // Creating cells for posting table data
-                var cell = row.append("td");
-                cell.text(value);
-            });
-        });
-
-
-
-})
-
+});
